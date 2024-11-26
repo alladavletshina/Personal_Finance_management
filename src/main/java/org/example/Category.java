@@ -8,4 +8,18 @@ public class Category {
     }
 
     // Геттеры и сеттеры
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Category)) return false;
+        Category category = (Category) o;
+        return name.equals(category.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+
+    }
 }
