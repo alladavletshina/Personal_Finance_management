@@ -66,25 +66,4 @@ public class Wallet {
         // Здесь будет логика для чтения данных из файла
     }
 
-    public static void main(String[] args) {
-        Wallet wallet = new Wallet();
-
-        Category food = new Category("Food");
-        Category transport = new Category("Transport");
-
-        wallet.setBudget(food, 3000.0);     // Установлен бюджет на еду в размере 3000 рублей
-        wallet.setBudget(transport, 2000.0); // Установлен бюджет на транспорт в размере 2000 рублей
-
-        Transaction income = new Transaction(food, 8000.0, true);       // Доход в размере 8000 рублей
-        Transaction expenseFood = new Transaction(food, 1200.0, false); // Расход на еду в размере 1200 рублей
-        Transaction expenseTransport = new Transaction(transport, 600.0, false); // Расход на транспорт в размере 600 рублей
-
-        wallet.recordTransaction(income);
-        wallet.recordTransaction(expenseFood);
-        wallet.recordTransaction(expenseTransport);
-
-        System.out.println("Текущий баланс: " + wallet.getBalance());          // Текущий баланс: 6200.0
-        System.out.println("Оставшийся бюджет на еду: " + wallet.getRemainingBudget(food)); // Оставшийся бюджет на еду: 1800.0
-        System.out.println("Оставшийся бюджет на транспорт: " + wallet.getRemainingBudget(transport)); // Оставшийся бюджет на транспорт: 1400.0
-    }
 }

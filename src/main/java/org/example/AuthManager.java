@@ -16,7 +16,18 @@ public class AuthManager {
         String login = user.getLogin();
         String password = user.getPassword();
 
+        if (users.containsKey(login)) {
+            throw new IllegalArgumentException("Пользователь с таким именем уже зарегистрирован.");
+        }
         users.put(login,password);
+    }
+
+    public boolean authenticate(User user) {
+        String login = user.getLogin();
+        String password = user.getPassword();
+
+        String storedPassword = users.get(login);
+        return storedPassword != null && storedPassword.equals(password);
     }
 
     public void displayAllUsers() {
