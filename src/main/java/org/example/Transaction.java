@@ -7,8 +7,10 @@ public class Transaction {
 
     public Map<String, Double> incomes;
     public Map<String, Double> expenses;
+    private Wallet wallet;
 
-    public Transaction() {
+    public Transaction(Wallet wallet) {
+        this.wallet = wallet;
         incomes = new HashMap<>();
         expenses = new HashMap<>();
     }
@@ -24,7 +26,12 @@ public class Transaction {
             expenses.put(category, amount);
         }
 
+        // Обновляем бюджет, если он был установлен
+
+        updateBudget(category, amount);
+
         System.out.println("Расход успешно добавлен!");
+        System.out.printf("%s: %.2f\n", category, wallet.budgets.get(category));
     }
 
     public void addIncome(String category, double amount) {
@@ -60,6 +67,14 @@ public class Transaction {
             for (String category : incomes.keySet()) {
                 System.out.printf("%s: %.2f\n", category, incomes.get(category));
             }
+        }
+    }
+
+    private void updateBudget(String category, double amount) {
+        // Обновляем бюджет, если он был установлен
+        if (wallet.budgets.containsKey(category)) {
+            double remainingBudget = wallet.budgets.get(category) - amount;
+            wallet.budgets.put(category, remainingBudget);
         }
     }
 }

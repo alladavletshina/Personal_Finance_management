@@ -12,7 +12,7 @@ public class Main {
         scanner = new Scanner(System.in);
         authManager = new AuthManager();
         wallet = new Wallet();
-        transaction = new Transaction();
+        transaction = new Transaction(wallet);
     }
 
     public void startApplication() {
@@ -108,7 +108,15 @@ public class Main {
 
                     break;
                 case 3:
-                    System.out.println("нет пока кода");
+                    System.out.println("Введите категорию бюджета:");
+                    String categoryBudget = scanner.nextLine();
+
+                    System.out.print("Ввести сумму бюджета: ");
+                    amount = Double.parseDouble(scanner.nextLine());
+
+                    wallet.setBudget(categoryBudget, amount);
+                    wallet.viewBudgets();
+
                     break;
                 case 0:
                     exitMenu = false;
