@@ -6,11 +6,13 @@ public class Main {
     private Scanner scanner;
     private AuthManager authManager;
     private Wallet wallet;
+    private Transaction transaction;
 
     public Main() {
         scanner = new Scanner(System.in);
         authManager = new AuthManager();
         wallet = new Wallet();
+        transaction = new Transaction();
     }
 
     public void startApplication() {
@@ -69,30 +71,51 @@ public class Main {
     }
 
     private void manageFinances() {
-        System.out.println("\nУправление финансами:");
-        System.out.println("1. Внести доход");
-        System.out.println("2. Сделать расход");
-        System.out.println("3. Показать текущий баланс");
-        System.out.print("Ваш выбор: ");
 
-        int choice = getUserChoice();
+        boolean exitMenu = true;
 
-        switch (choice) {
-            case 1:
-                System.out.print("Внесите сумму дохода: ");
-                double amount = Double.parseDouble(scanner.nextLine());
-                wallet.addIncome(amount);
-                break;
-            case 2:
-                System.out.print("Ввести сумму расхода: ");
-                amount = Double.parseDouble(scanner.nextLine());
-                System.out.println("нет пока кода");
-                break;
-            case 3:
-                System.out.println("нет пока кода");
-                break;
-            default:
-                System.out.println("Неправильный выбор. Попробуйте снова.");
+        while (exitMenu) {
+            System.out.println("\nУправление финансами:");
+            System.out.println("1. Внести доход");
+            System.out.println("2. Внести расход");
+            System.out.println("3. Установить бюджет на категорию");
+            System.out.println("0. Выйти на главную страницу");
+            System.out.print("Ваш выбор: ");
+
+            int choice = getUserChoice();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Введите категорию расхода:");
+                    String category = scanner.nextLine();
+
+                    System.out.print("Внесите сумму дохода: ");
+                    double amount = Double.parseDouble(scanner.nextLine());
+
+                    transaction.addIncome(category, amount);
+                    transaction.viewIncomes();
+
+                    break;
+                case 2:
+                    System.out.println("Введите категорию расхода:");
+                    String categoryExpenses = scanner.nextLine();
+
+                    System.out.print("Ввести сумму расхода: ");
+                    amount = Double.parseDouble(scanner.nextLine());
+
+                    transaction.addExpence(categoryExpenses, amount);
+                    transaction.viewExpenses();
+
+                    break;
+                case 3:
+                    System.out.println("нет пока кода");
+                    break;
+                case 0:
+                    exitMenu = false;
+                    break;
+                default:
+                    System.out.println("Неправильный выбор. Попробуйте снова.");
+            }
         }
     }
 
