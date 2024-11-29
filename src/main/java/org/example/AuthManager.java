@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class AuthManager {
     private Map<String, String> users;
+    private String currentUser;
 
     public AuthManager() {
         users = new HashMap<>();
@@ -12,9 +13,7 @@ public class AuthManager {
 
     // Методы для регистрации и авторизации пользователей
 
-    public void addUser(User user) {
-        String login = user.getLogin();
-        String password = user.getPassword();
+    public void addUser(String login, String password) {
 
         if (users.containsKey(login)) {
             throw new IllegalArgumentException("Пользователь с таким именем уже зарегистрирован.");
@@ -22,12 +21,21 @@ public class AuthManager {
         users.put(login,password);
     }
 
-    public boolean authenticate(User user) {
-        String login = user.getLogin();
-        String password = user.getPassword();
+    public boolean authenticate(String login, String password) {
 
         String storedPassword = users.get(login);
-        return storedPassword != null && storedPassword.equals(password);
+
+        if (storedPassword == null || !storedPassword.equals(password)) {
+            return false;
+        }
+
+        // Сохраняем текущий авторизованный пользователь
+        currentUser = login;
+        return true;
+    }
+
+    public String getCurrentUser() {
+        return currentUser;
     }
 
     public void displayAllUsers() {

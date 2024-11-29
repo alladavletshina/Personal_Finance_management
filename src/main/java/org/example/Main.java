@@ -73,7 +73,7 @@ public class Main {
         String password = scanner.nextLine();
 
         User user = new User(login, password);
-        if (authManager.authenticate(user)) {
+        if (authManager.authenticate(login, password)) {
             System.out.println("Авторизация успешна!");
             System.out.println("Доступ к управлению финансами предоставлен.");
             manageFinances();
@@ -147,9 +147,8 @@ public class Main {
         System.out.print("Введите пароль: ");
         String password = scanner.nextLine();
 
-        User user = new User(login, password);
         try {
-            authManager.addUser(user);
+            authManager.addUser(login, password);
             System.out.println("Регистрация прошла успешно!");
         } catch (IllegalArgumentException e) {
             System.out.println("Пользователь с таким именем уже зарегистрирован.");

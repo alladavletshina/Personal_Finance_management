@@ -4,6 +4,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public class DataStorage {
     private AuthManager authManager;
@@ -20,29 +23,35 @@ public class DataStorage {
 
     public void safeToFile() {
         // Имя файла должно быть определено заранее или передаваться в качестве аргумента
-        String fileName = "UsersData.txt";
+        String fileName = "finance_data.txt";
 
         // Логика для записи данных в файл
-        try (FileWriter writer = new FileWriter(fileName, true)) { // Используем try-with-resources для автоматического закрытия ресурсов
+        try (FileWriter writer = new FileWriter(fileName, true); // Используем try-with-resources для автоматического закрытия ресурсов
+             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+
+            // Проверяем, существуют ли заголовки в файле
+            String firstLine = reader.readLine();
+            boolean hasHeaders = firstLine != null && firstLine.startsWith("Пользователь,Категория,Сумма,Расход?");
+
+            // Запись заголовков, если их нет
+            if (!hasHeaders) {
+                writer.write("Пользователь,Категория,Сумма,Расход?\n");
+            }
+
             // Запись данных в файл
-            // Запись заголовков для расходов
-            writer.write("Категория,Сумма\n");
-            for (Map.Entry<String, Double> entry : transaction.getExpenses().entrySet()) {
-                writer.write(this.user + "," + entry.getKey() + "," + entry.getValue() + "\n");
-            }
-
-            // Разделитель между расходами и доходами
-            writer.write("\n");
-
-            // Запись заголовков для доходов
-            writer.write("Категория,Сумма\n");
-            for (Map.Entry<String, Double> entry : transaction.getIncomes().entrySet()) {
-                writer.write(this.user + "," + entry.getKey() + "," + entry.getValue() + "\n");
-            }
+            writeTransactions(writer, authManager.getCurrentUser(), transaction.getExpenses(), "да");
+            writeTransactions(writer, authManager.getCurrentUser(), transaction.getIncomes(), "нет");
 
             System.out.println("Данные записаны в файл " + fileName);
         } catch (IOException e) {
             System.out.println("Ошибка при записи в файл: " + e.getMessage());
         }
     }
+
+    private void writeTransactions(FileWriter writer, String user, Map<String, Double> transactions, String expenseFlag) throws IOException {
+        for (Map.Entry<String, Double> entry : transactions.entrySet()) {
+            writer.write(user + "," + entry.getKey() + "," + entry.getValue() + "," + expenseFlag + "\n");
+        }
+    }
+
 }
