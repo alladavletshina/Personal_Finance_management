@@ -35,7 +35,7 @@ public class User {
 
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {
@@ -49,5 +49,5 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(getLogin(),getPassword());
-    }*/
+    }
 }

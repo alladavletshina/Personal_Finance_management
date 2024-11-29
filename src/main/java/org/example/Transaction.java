@@ -1,5 +1,7 @@
 package org.example;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +15,14 @@ public class Transaction {
         this.wallet = wallet;
         incomes = new HashMap<>();
         expenses = new HashMap<>();
+    }
+
+    public Map<String, Double> getExpenses() {
+        return expenses;
+    }
+
+    public Map<String, Double> getIncomes() {
+        return incomes;
     }
 
     public void addExpence(String category, double amount) {
@@ -77,4 +87,13 @@ public class Transaction {
             wallet.budgets.put(category, remainingBudget);
         }
     }
+
+    public double getTotalIncome() {
+        return incomes.values().stream().mapToDouble(Double::doubleValue).sum();
+    }
+
+    public double getTotalExpense() {
+        return expenses.values().stream().mapToDouble(Double::doubleValue).sum();
+    }
+
 }

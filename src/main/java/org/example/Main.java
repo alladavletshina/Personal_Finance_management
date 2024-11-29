@@ -7,12 +7,14 @@ public class Main {
     private AuthManager authManager;
     private Wallet wallet;
     private Transaction transaction;
+    private DataStorage dataStorage;
 
     public Main() {
         scanner = new Scanner(System.in);
         authManager = new AuthManager();
         wallet = new Wallet();
         transaction = new Transaction(wallet);
+        dataStorage = new DataStorage(authManager, wallet, transaction);
     }
 
     public void startApplication() {
@@ -28,6 +30,7 @@ public class Main {
                     handleRegistration();
                     break;
                 case 3:
+                    dataStorage.safeToFile();
                     exitApp();
                     return;
                 default:
@@ -50,6 +53,15 @@ public class Main {
         } catch (NumberFormatException e) {
             System.out.println("Ошибка ввода. Пожалуйста, введите число.");
             return -1; // Возвращаем недействительное значение для повторной попытки
+        }
+    }
+
+    private Double getUserSumChoice() {
+        try {
+            return Double.parseDouble(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Ошибка ввода. Пожалуйста, введите число.");
+            return getUserSumChoice();
         }
     }
 
@@ -86,14 +98,15 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    System.out.println("Введите категорию расхода:");
+                    System.out.println("Введите категорию дохода:");
                     String category = scanner.nextLine();
 
                     System.out.print("Внесите сумму дохода: ");
-                    double amount = Double.parseDouble(scanner.nextLine());
+                    double amount = getUserSumChoice();
 
                     transaction.addIncome(category, amount);
                     transaction.viewIncomes();
+                    System.out.println(transaction.getTotalIncome());
 
                     break;
                 case 2:
@@ -101,9 +114,9 @@ public class Main {
                     String categoryExpenses = scanner.nextLine();
 
                     System.out.print("Ввести сумму расхода: ");
-                    amount = Double.parseDouble(scanner.nextLine());
+                    double amountExpenses = getUserSumChoice();
 
-                    transaction.addExpence(categoryExpenses, amount);
+                    transaction.addExpence(categoryExpenses, amountExpenses);
                     transaction.viewExpenses();
 
                     break;
@@ -112,7 +125,7 @@ public class Main {
                     String categoryBudget = scanner.nextLine();
 
                     System.out.print("Ввести сумму бюджета: ");
-                    amount = Double.parseDouble(scanner.nextLine());
+                    amount = getUserSumChoice();
 
                     wallet.setBudget(categoryBudget, amount);
                     wallet.viewBudgets();

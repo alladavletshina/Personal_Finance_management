@@ -26,7 +26,7 @@ public class Wallet {
             budgets.put(category, amount);
         }
 
-        System.out.println("Установлен бюджет в размере " + budgets.get(category) + "рублей по категории " + category);
+        System.out.println("Установлен бюджет в размере " + budgets.get(category) + " рублей по категории " + category);
     }
 
     public void viewBudgets() {
@@ -40,24 +40,7 @@ public class Wallet {
         }
     }
 
-    /*public void safeToFile() {
-
-        // Здесь будет логика для записи данных в файл
-        try {
-            File file = new File("filename.txt");
-            FileWriter writer = new FileWriter(file, true);
-
-            // Здесь будет логика для записи данных в файл
-            writer.write("Данные для записи в файл\n");
-            writer.flush();
-            writer.close();
-            System.out.println("Данные записаны в файл filename.txt");
-        } catch (IOException e) {
-            System.out.println("Ошибка при записи в файл: " + e.getMessage());
-        }
-    }
-
-    public void loadFromFile() {
+    /*public void loadFromFile() {
         try {
             File file = new File("filename.txt");
             BufferedReader reader = new BufferedReader(new FileReader(file));
