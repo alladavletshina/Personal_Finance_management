@@ -18,6 +18,7 @@ public class Main {
     }
 
     public void startApplication() {
+        dataStorage.readUsersFromFile();
         while (true) {
             showMenu();
             int choice = getUserChoice();
@@ -72,7 +73,6 @@ public class Main {
         System.out.print("Введите пароль: ");
         String password = scanner.nextLine();
 
-        User user = new User(login, password);
         if (authManager.authenticate(login, password)) {
             System.out.println("Авторизация успешна!");
             System.out.println("Доступ к управлению финансами предоставлен.");

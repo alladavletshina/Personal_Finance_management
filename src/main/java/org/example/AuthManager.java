@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AuthManager {
-    private Map<String, String> users;
+    public Map<String, String> users;
     private String currentUser;
+    private String currentPassword;
 
     public AuthManager() {
         users = new HashMap<>();
@@ -14,11 +15,22 @@ public class AuthManager {
     // Методы для регистрации и авторизации пользователей
 
     public void addUser(String login, String password) {
+        if (login == null || login.isBlank()) {
+            throw new IllegalArgumentException("Логин не может быть пустым.");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Пароль не может быть пустым.");
+        }
 
         if (users.containsKey(login)) {
-            throw new IllegalArgumentException("Пользователь с таким именем уже зарегистрирован.");
+            throw new IllegalArgumentException("Пользователь с логином '" + login + "' уже зарегистрирован.");
         }
-        users.put(login,password);
+
+        users.put(login, password);
+    }
+
+    public Map<String, String> getUsers() {
+        return users;
     }
 
     public boolean authenticate(String login, String password) {
@@ -31,11 +43,16 @@ public class AuthManager {
 
         // Сохраняем текущий авторизованный пользователь
         currentUser = login;
+        currentPassword = password;
         return true;
     }
 
     public String getCurrentUser() {
         return currentUser;
+    }
+
+    public String getCurrentPassword() {
+        return currentPassword;
     }
 
     public void displayAllUsers() {

@@ -40,20 +40,4 @@ public class Wallet {
         }
     }
 
-    /*public void loadFromFile() {
-        try {
-            File file = new File("filename.txt");
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            String line = "";
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line.trim());
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Файл не найден: " + e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
-
 }
