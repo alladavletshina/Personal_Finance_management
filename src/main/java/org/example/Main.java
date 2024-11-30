@@ -84,6 +84,7 @@ public class Main {
 
     private void manageFinances() {
 
+        dataStorage.readIncomesFromFileAndRemoveProcessedLines();
         boolean exitMenu = true;
 
         while (exitMenu) {

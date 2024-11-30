@@ -7,6 +7,15 @@ import java.util.Scanner;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataStorage {
     private AuthManager authManager;
@@ -78,6 +87,92 @@ public class DataStorage {
             }
         } catch (IOException e) {
             System.out.println("Ошибка при чтении файла: " + e.getMessage());
+        }
+    }
+
+    /*public void readIncomesFromFile() {
+
+        String fileName = "finance_data.txt";
+        String currentUser = authManager.getCurrentUser();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+
+            String line;
+            // Пропускаем первую строку с заголовками
+            reader.readLine();
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5) {
+                    String user = parts[0].trim();
+                    String isExpense = parts[4].trim();
+
+                    // Проверяем, соответствует ли строка текущему пользователю и является ли это доходом
+                    if (user.equals(currentUser) && !isExpense.equals("да")) {
+                        String category = parts[2].trim();
+                        double amount = Double.parseDouble(parts[3].trim());
+
+                        // Добавляем категорию и доход в коллекцию доходов
+                        transaction.addIncome(category, amount);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Ошибка при чтении файла: " + e.getMessage());
+        }
+    }*/
+
+    public void readIncomesFromFileAndRemoveProcessedLines() {
+        List<String> linesToKeep = new ArrayList<>();
+
+        String fileName = "finance_data.txt";
+        String currentUser = authManager.getCurrentUser();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+
+            String line;
+            // Пропускаем первую строку с заголовками
+            String header = reader.readLine();
+            linesToKeep.add(header);
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5) {
+                    String user = parts[0].trim();
+                    String isExpense = parts[4].trim();
+
+                    // Проверяем, соответствует ли строка текущему пользователю и является ли это доходом
+                    if (user.equals(currentUser) && !isExpense.equals("да")) {
+                        String category = parts[2].trim();
+                        double amount = Double.parseDouble(parts[3].trim());
+
+                        // Добавляем категорию и доход в коллекцию доходов
+                        transaction.addIncome(category, amount);
+                    } else {
+                        // Сохраняем строку, если она не относится к доходам текущего пользователя
+                        linesToKeep.add(line);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Ошибка при чтении файла: " + e.getMessage());
+            return;
+        }
+
+        // Перезаписываем файл, удалив строки с доходами текущего пользователя
+        try (OutputStreamWriter writer = new OutputStreamWriter(
+                new FileOutputStream(fileName), StandardCharsets.UTF_8)) {
+
+            for (String line : linesToKeep) {
+                writer.write(line);
+                writer.write('\n');
+            }
+
+            writer.flush();
+        } catch (IOException e) {
+            System.out.println("Ошибка при записи в файл: " + e.getMessage());
         }
     }
 
