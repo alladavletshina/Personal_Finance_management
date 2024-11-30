@@ -38,16 +38,17 @@ public class DataStorage {
 
             // Проверяем, существуют ли заголовки в файле
             String firstLine = reader.readLine();
-            boolean hasHeaders = firstLine != null && firstLine.startsWith("Пользователь,Пароль,Категория,Сумма,Расход?");
+            boolean hasHeaders = firstLine != null && firstLine.startsWith("Пользователь,Пароль,Категория,Сумма,Тип");
 
             // Запись заголовков, если их нет
             if (!hasHeaders) {
-                writer.write("Пользователь,Пароль,Категория,Сумма,Расход?\n");
+                writer.write("Пользователь,Пароль,Категория,Сумма,Тип\n");
             }
 
             // Запись данных в файл
-            writeTransactions(writer, authManager.getCurrentUser(), authManager.getCurrentPassword(), transaction.getExpenses(), "да");
-            writeTransactions(writer, authManager.getCurrentUser(), authManager.getCurrentPassword(), transaction.getIncomes(), "нет");
+            writeTransactions(writer, authManager.getCurrentUser(), authManager.getCurrentPassword(), transaction.getExpenses(), "расход");
+            writeTransactions(writer, authManager.getCurrentUser(), authManager.getCurrentPassword(), transaction.getIncomes(), "доход");
+            writeTransactions(writer, authManager.getCurrentUser(), authManager.getCurrentPassword(), wallet.getBudgets(), "бюджет");
 
             System.out.println("Данные записаны в файл " + fileName);
         } catch (IOException e) {
@@ -55,9 +56,9 @@ public class DataStorage {
         }
     }
 
-    private void writeTransactions(FileWriter writer, String user, String password, Map<String, Double> transactions, String expenseFlag) throws IOException {
+    private void writeTransactions(FileWriter writer, String user, String password, Map<String, Double> transactions, String TypeFlag) throws IOException {
         for (Map.Entry<String, Double> entry : transactions.entrySet()) {
-            writer.write(user + "," + password + "," + entry.getKey() + "," + entry.getValue() + "," + expenseFlag + "\n");
+            writer.write(user + "," + password + "," + entry.getKey() + "," + entry.getValue() + "," + TypeFlag + "\n");
         }
     }
 
@@ -90,38 +91,6 @@ public class DataStorage {
         }
     }
 
-    /*public void readIncomesFromFile() {
-
-        String fileName = "finance_data.txt";
-        String currentUser = authManager.getCurrentUser();
-
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
-
-            String line;
-            // Пропускаем первую строку с заголовками
-            reader.readLine();
-
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 5) {
-                    String user = parts[0].trim();
-                    String isExpense = parts[4].trim();
-
-                    // Проверяем, соответствует ли строка текущему пользователю и является ли это доходом
-                    if (user.equals(currentUser) && !isExpense.equals("да")) {
-                        String category = parts[2].trim();
-                        double amount = Double.parseDouble(parts[3].trim());
-
-                        // Добавляем категорию и доход в коллекцию доходов
-                        transaction.addIncome(category, amount);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Ошибка при чтении файла: " + e.getMessage());
-        }
-    }*/
 
     public void readIncomesFromFileAndRemoveProcessedLines() {
         List<String> linesToKeep = new ArrayList<>();
@@ -141,10 +110,10 @@ public class DataStorage {
                 String[] parts = line.split(",");
                 if (parts.length >= 5) {
                     String user = parts[0].trim();
-                    String isExpense = parts[4].trim();
+                    String TypeTransaction = parts[4].trim();
 
                     // Проверяем, соответствует ли строка текущему пользователю и является ли это доходом
-                    if (user.equals(currentUser) && !isExpense.equals("да")) {
+                    if (user.equals(currentUser) && TypeTransaction.equals("доход")) {
                         String category = parts[2].trim();
                         double amount = Double.parseDouble(parts[3].trim());
 
@@ -157,7 +126,6 @@ public class DataStorage {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Ошибка при чтении файла: " + e.getMessage());
             return;
         }
 
@@ -176,4 +144,107 @@ public class DataStorage {
         }
     }
 
+    public void readExpenseFromFileAndRemoveProcessedLines() {
+        List<String> linesToKeep = new ArrayList<>();
+
+        String fileName = "finance_data.txt";
+        String currentUser = authManager.getCurrentUser();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+
+            String line;
+            // Пропускаем первую строку с заголовками
+            String header = reader.readLine();
+            linesToKeep.add(header);
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5) {
+                    String user = parts[0].trim();
+                    String TypeTransaction = parts[4].trim();
+
+                    // Проверяем, соответствует ли строка текущему пользователю и является ли это доходом
+                    if (user.equals(currentUser) && TypeTransaction.equals("расход")) {
+                        String category = parts[2].trim();
+                        double amount = Double.parseDouble(parts[3].trim());
+
+                        // Добавляем категорию и доход в коллекцию доходов
+                        transaction.addExpence(category, amount);
+                    } else {
+                        // Сохраняем строку, если она не относится к доходам текущего пользователя
+                        linesToKeep.add(line);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            return;
+        }
+
+        // Перезаписываем файл, удалив строки с доходами текущего пользователя
+        try (OutputStreamWriter writer = new OutputStreamWriter(
+                new FileOutputStream(fileName), StandardCharsets.UTF_8)) {
+
+            for (String line : linesToKeep) {
+                writer.write(line);
+                writer.write('\n');
+            }
+
+            writer.flush();
+        } catch (IOException e) {
+            System.out.println("Ошибка при записи в файл: " + e.getMessage());
+        }
+    }
+
+    public void readBudgetsFromFileAndRemoveProcessedLines() {
+        List<String> linesToKeep = new ArrayList<>();
+
+        String fileName = "finance_data.txt";
+        String currentUser = authManager.getCurrentUser();
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+
+            String line;
+            // Пропускаем первую строку с заголовками
+            String header = reader.readLine();
+            linesToKeep.add(header);
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5) {
+                    String user = parts[0].trim();
+                    String TypeTransaction = parts[4].trim();
+
+                    // Проверяем, соответствует ли строка текущему пользователю и является ли это доходом
+                    if (user.equals(currentUser) && TypeTransaction.equals("бюджет")) {
+                        String category = parts[2].trim();
+                        double amount = Double.parseDouble(parts[3].trim());
+
+                        // Добавляем категорию и доход в коллекцию доходов
+                        wallet.setBudget(category, amount);
+                    } else {
+                        // Сохраняем строку, если она не относится к доходам текущего пользователя
+                        linesToKeep.add(line);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            return;
+        }
+
+        // Перезаписываем файл, удалив строки с доходами текущего пользователя
+        try (OutputStreamWriter writer = new OutputStreamWriter(
+                new FileOutputStream(fileName), StandardCharsets.UTF_8)) {
+
+            for (String line : linesToKeep) {
+                writer.write(line);
+                writer.write('\n');
+            }
+
+            writer.flush();
+        } catch (IOException e) {
+            System.out.println("Ошибка при записи в файл: " + e.getMessage());
+        }
+    }
 }

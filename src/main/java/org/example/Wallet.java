@@ -29,6 +29,10 @@ public class Wallet {
         System.out.println("Установлен бюджет в размере " + budgets.get(category) + " рублей по категории " + category);
     }
 
+    public Map<String, Double> getBudgets() {
+        return budgets;
+    }
+
     public void viewBudgets() {
         if (budgets.isEmpty()) {
             System.out.println("Нет записей о бюджетах.");

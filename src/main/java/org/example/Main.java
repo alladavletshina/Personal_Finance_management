@@ -18,7 +18,9 @@ public class Main {
     }
 
     public void startApplication() {
+
         dataStorage.readUsersFromFile();
+
         while (true) {
             showMenu();
             int choice = getUserChoice();
@@ -85,6 +87,9 @@ public class Main {
     private void manageFinances() {
 
         dataStorage.readIncomesFromFileAndRemoveProcessedLines();
+        dataStorage.readExpenseFromFileAndRemoveProcessedLines();
+        dataStorage.readBudgetsFromFileAndRemoveProcessedLines();
+
         boolean exitMenu = true;
 
         while (exitMenu) {

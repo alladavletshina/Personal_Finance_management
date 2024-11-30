@@ -41,7 +41,6 @@ public class Transaction {
         updateBudget(category, amount);
 
         System.out.println("Расход успешно добавлен!");
-        System.out.printf("%s: %.2f\n", category, wallet.budgets.get(category));
     }
 
     public void addIncome(String category, double amount) {
