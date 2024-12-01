@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataStorage {
-    private AuthManager authManager;
-    private Wallet wallet;
-    private Transaction transaction;
+    final private AuthManager authManager;
+    final private Wallet wallet;
+    final private Transaction transaction;
 
     public DataStorage(AuthManager authManager, Wallet wallet, Transaction transaction) {
         this.authManager = authManager;
@@ -82,7 +82,7 @@ public class DataStorage {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Добро пожаловать в приложение по финансам!");;
+            System.out.println("Добро пожаловать в приложение по финансам!");
         }
     }
 
