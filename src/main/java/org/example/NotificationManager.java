@@ -2,8 +2,8 @@ package org.example;
 import java.util.Map;
 
 public class NotificationManager {
-    private Transaction transaction;
-    private Wallet wallet;
+    final private Transaction transaction;
+    final private Wallet wallet;
 
     public NotificationManager(Transaction transaction, Wallet wallet) {
         this.transaction = transaction;
@@ -27,7 +27,7 @@ public class NotificationManager {
             double expense = transaction.getSpentAmount(category);
 
             if (expense > limit) {
-                System.out.printf("Превышен лимит бюджета по категории '%s': лимит %,.2f, расходы %,.2f.\n", category, limit, expense);;
+                System.out.printf("Превышен лимит бюджета по категории '%s': лимит %,.2f, расходы %,.2f.\n", category, limit, expense);
             }
         }
     }
