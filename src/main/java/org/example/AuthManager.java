@@ -29,10 +29,6 @@ public class AuthManager {
         users.put(login, password);
     }
 
-    public Map<String, String> getUsers() {
-        return users;
-    }
-
     public boolean authenticate(String login, String password) {
 
         String storedPassword = users.get(login);
@@ -55,10 +51,5 @@ public class AuthManager {
         return currentPassword;
     }
 
-    public void displayAllUsers() {
-        for (Map.Entry<String, String> entry : users.entrySet()) {
-            System.out.println("Username: " + entry.getKey() + ", Password: " + entry.getValue());
-        }
-    }
 
 }

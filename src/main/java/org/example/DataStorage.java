@@ -3,17 +3,12 @@ package org.example;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Scanner;
-import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,7 +82,7 @@ public class DataStorage {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Ошибка при чтении файла: " + e.getMessage());
+            System.out.println("Добро пожаловать в приложение по финансам!");;
         }
     }
 

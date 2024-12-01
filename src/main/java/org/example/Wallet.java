@@ -1,16 +1,15 @@
 package org.example;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Wallet {
-    public double balance;
     public Map<String, Double> budgets;
+    AuthManager authManager;
 
-    public Wallet() {
-        this.balance = 0.0;
+    public Wallet(AuthManager authManager) {
         budgets = new HashMap<>();
+        this.authManager = authManager;
     }
 
     // Методы для работы с кошельком
@@ -25,8 +24,6 @@ public class Wallet {
             // Если нет, добавляем новую запись
             budgets.put(category, amount);
         }
-
-        //System.out.println("Установлен бюджет в размере " + budgets.get(category) + " рублей для категории " + category);
     }
 
     public Map<String, Double> getBudgets() {
@@ -34,3 +31,4 @@ public class Wallet {
     }
 
 }
+

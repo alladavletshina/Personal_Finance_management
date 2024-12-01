@@ -1,18 +1,21 @@
 package org.example;
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class Main {
-    private Scanner scanner;
-    private AuthManager authManager;
-    private Wallet wallet;
-    private Transaction transaction;
-    private DataStorage dataStorage;
-    private NotificationManager notificationManager;
+    private final Scanner scanner;
+    private final AuthManager authManager;
+    private final Wallet wallet;
+    private final Transaction transaction;
+    private final DataStorage dataStorage;
+    private final NotificationManager notificationManager;
 
     public Main() {
         scanner = new Scanner(System.in);
         authManager = new AuthManager();
-        wallet = new Wallet();
+        wallet = new Wallet(authManager);
         transaction = new Transaction(wallet);
         dataStorage = new DataStorage(authManager, wallet, transaction);
         notificationManager = new NotificationManager(transaction, wallet);
@@ -91,13 +94,12 @@ public class Main {
         dataStorage.readExpenseFromFileAndRemoveProcessedLines();
         dataStorage.readBudgetsFromFileAndRemoveProcessedLines();
 
-        boolean exitMenu = true;
-
-        while (exitMenu) {
+        while (true) {
             System.out.println("\nУправление финансами:");
             System.out.println("1. Внести доход");
             System.out.println("2. Внести расход");
             System.out.println("3. Установить бюджет на категорию");
+            System.out.println("4. Выгрузить финансовый отчет в файл");
             System.out.println("0. Выход");
             System.out.print("Ваш выбор: ");
 
@@ -133,8 +135,10 @@ public class Main {
 
                     wallet.setBudget(categoryBudget, amount);
                     break;
+                case 4:
+                    saveDisplayResultsToFile();
+                    break;
                 case 0:
-                    exitMenu = false;
                     dataStorage.safeToFile();
                     displayAllTransactions();
                     exitApp();
@@ -184,5 +188,70 @@ public class Main {
         transaction.viewExpenses();
         System.out.println();
         transaction.viewBudgets();
+    }
+
+    public void saveDisplayResultsToFile() {
+
+        String fileName = "Финансовый отчет.txt";
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            writer.println("Общий доход: " + transaction.getTotalIncome());
+            writer.println();
+            viewIncomes(writer);
+            writer.println();
+            writer.println("Общие расходы: " + transaction.getTotalExpense());
+            writer.println();
+            viewExpenses(writer);
+            writer.println();
+            viewBudgets(writer);
+        } catch (IOException e) {
+            System.err.println("Ошибка при сохранении данных в файл: " + e.getMessage());
+        }
+
+        System.out.println("Данные записаны в файл " + fileName);
+    }
+
+    // Методы viewIncomes, viewExpenses и viewBudgets нужно немного изменить, чтобы они принимали PrintWriter
+    public void viewIncomes(PrintWriter writer) {
+        if (transaction.incomes.isEmpty()) {
+            writer.println("Нет записей о доходах.");
+        } else {
+            writer.println("Доходы по категориям:");
+            for (String category : transaction.incomes.keySet()) {
+                final double amount = transaction.incomes.getOrDefault(category, 0.0);
+                writer.printf("%s: %.2f%n", category, amount);
+            }
+        }
+    }
+
+    public void viewExpenses(PrintWriter writer) {
+        if (transaction.expenses.isEmpty()) {
+            writer.println("Нет записей о расходах.");
+        } else {
+            writer.println("Расходы по категориям:");
+            for (String category : transaction.expenses.keySet()) {
+                final double amount = transaction.expenses.getOrDefault(category, 0.0);
+                writer.printf("%s: %.2f%n", category, amount);
+            }
+        }
+    }
+
+    public void viewBudgets(PrintWriter writer) {
+        if (wallet.budgets.isEmpty()) {
+            writer.println("Нет записей о бюджетах.");
+        } else {
+            writer.println("Бюджеты по категориям:");
+            for (String category : wallet.budgets.keySet()) {
+                final double startBudget = wallet.budgets.getOrDefault(category, 0.0);
+                double spentAmount = transaction.getSpentAmount(category);
+                double remainingBudget = startBudget - spentAmount;
+
+                if (spentAmount == 0) {
+                    writer.printf("%s: %.2f, оставшийся бюджет: %.2f (расходы отсутствуют)%n", category, startBudget, remainingBudget);
+                } else {
+                    writer.printf("%s: %.2f, оставшийся бюджет: %.2f%n", category, startBudget, remainingBudget);
+                }
+            }
+        }
     }
 }
