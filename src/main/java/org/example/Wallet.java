@@ -19,7 +19,9 @@ public class Wallet {
         if (budgets.containsKey(category)) {
             // Если да, обновляем значение, прибавляя новую сумму к старой
             double currentAmount = budgets.get(category);
-            budgets.put(category, currentAmount + amount);
+            budgets.put(category, amount);
+            System.out.println();
+            System.out.println("Категория " + category + " уже существовала в бюджете. Старое значение: " + currentAmount + "\nВы назначили новое значение: " + amount);
         } else {
             // Если нет, добавляем новую запись
             budgets.put(category, amount);
