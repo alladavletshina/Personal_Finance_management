@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Transaction {
 
@@ -36,11 +37,6 @@ public class Transaction {
             expenses.put(category, amount);
         }
 
-        // Обновляем бюджет, если он был установлен
-
-        updateBudget(category, amount);
-
-        System.out.println("Расход успешно добавлен!");
     }
 
     public void addIncome(String category, double amount) {
@@ -54,14 +50,13 @@ public class Transaction {
             incomes.put(category, amount);
         }
 
-        System.out.println("Доход успешно добавлен!");
     }
 
     public void viewExpenses() {
         if (expenses.isEmpty()) {
             System.out.println("Нет записей о расходах.");
         } else {
-            System.out.println("Текущие расходы по категориям:");
+            System.out.println("Расходы по категориям:");
             for (String category : expenses.keySet()) {
                 System.out.printf("%s: %.2f\n", category, expenses.get(category));
             }
@@ -72,7 +67,7 @@ public class Transaction {
         if (incomes.isEmpty()) {
             System.out.println("Нет записей о доходах.");
         } else {
-            System.out.println("Текущие доходы по категориям:");
+            System.out.println("Доходы по категориям:");
             for (String category : incomes.keySet()) {
                 System.out.printf("%s: %.2f\n", category, incomes.get(category));
             }
@@ -93,6 +88,32 @@ public class Transaction {
 
     public double getTotalExpense() {
         return expenses.values().stream().mapToDouble(Double::doubleValue).sum();
+    }
+
+    public double getSpentAmount(String category) {
+        // Используем getOrDefault для защиты от NPE
+        Double spentAmount = expenses.getOrDefault(category, 0.0);
+        return spentAmount;
+    }
+
+    public void viewBudgets() {
+        if (wallet.budgets.isEmpty()) {
+            System.out.println("Нет записей о бюджетах.");
+        } else {
+            System.out.println("Бюджеты по категориям:");
+            for (String category : wallet.budgets.keySet()) {
+                final double startBudget = wallet.budgets.getOrDefault(category, 0.0); // Используем getOrDefault для защиты от NPE
+                double spentAmount = getSpentAmount(category);
+                double remainingBudget = startBudget - spentAmount;
+
+                if (spentAmount == 0) {
+                    System.out.printf("%s: %.2f, оставшийся бюджет: %.2f (расходы отсутствуют)\n", category, startBudget, remainingBudget);
+                } else {
+                    System.out.printf("%s: %.2f, оставшийся бюджет: %.2f\n", category, startBudget, remainingBudget);
+                }
+            }
+
+        }
     }
 
 }

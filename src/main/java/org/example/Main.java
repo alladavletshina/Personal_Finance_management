@@ -1,5 +1,4 @@
 package org.example;
-
 import java.util.Scanner;
 
 public class Main {
@@ -8,6 +7,7 @@ public class Main {
     private Wallet wallet;
     private Transaction transaction;
     private DataStorage dataStorage;
+    private NotificationManager notificationManager;
 
     public Main() {
         scanner = new Scanner(System.in);
@@ -15,6 +15,7 @@ public class Main {
         wallet = new Wallet();
         transaction = new Transaction(wallet);
         dataStorage = new DataStorage(authManager, wallet, transaction);
+        notificationManager = new NotificationManager(transaction, wallet);
     }
 
     public void startApplication() {
@@ -97,7 +98,7 @@ public class Main {
             System.out.println("1. Внести доход");
             System.out.println("2. Внести расход");
             System.out.println("3. Установить бюджет на категорию");
-            System.out.println("0. Выйти на главную страницу");
+            System.out.println("0. Выход");
             System.out.print("Ваш выбор: ");
 
             int choice = getUserChoice();
@@ -111,9 +112,6 @@ public class Main {
                     double amount = getUserSumChoice();
 
                     transaction.addIncome(category, amount);
-                    transaction.viewIncomes();
-                    System.out.println(transaction.getTotalIncome());
-
                     break;
                 case 2:
                     System.out.println("Введите категорию расхода:");
@@ -123,8 +121,8 @@ public class Main {
                     double amountExpenses = getUserSumChoice();
 
                     transaction.addExpence(categoryExpenses, amountExpenses);
-                    transaction.viewExpenses();
-
+                    notificationManager.checkExceedingExpenses();
+                    notificationManager.checkBudgetLimitExceeded();
                     break;
                 case 3:
                     System.out.println("Введите категорию бюджета:");
@@ -134,12 +132,13 @@ public class Main {
                     amount = getUserSumChoice();
 
                     wallet.setBudget(categoryBudget, amount);
-                    wallet.viewBudgets();
-
                     break;
                 case 0:
                     exitMenu = false;
-                    break;
+                    dataStorage.safeToFile();
+                    displayAllTransactions();
+                    exitApp();
+                    return;
                 default:
                     System.out.println("Неправильный выбор. Попробуйте снова.");
             }
@@ -162,6 +161,7 @@ public class Main {
     }
 
     private void exitApp() {
+        System.out.println();
         System.out.println("До свидание! Будем рады видеть Вас снова!");
         scanner.close(); // Закрываем сканнер, чтобы избежать утечек ресурсов
         System.exit(0); // Завершаем приложение
@@ -173,8 +173,16 @@ public class Main {
         main.startApplication();
     }
 
-    private void displayAllUsers() {
-        System.out.println("\nЗарегистрированные пользователи:");
-        authManager.displayAllUsers();
+    public void displayAllTransactions() {
+        System.out.println();
+        System.out.println("Общий доход: " + transaction.getTotalIncome());
+        System.out.println();
+        transaction.viewIncomes();
+        System.out.println();
+        System.out.println("Общие расходы: " + transaction.getTotalExpense());
+        System.out.println();
+        transaction.viewExpenses();
+        System.out.println();
+        transaction.viewBudgets();
     }
 }

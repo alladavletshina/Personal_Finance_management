@@ -1,7 +1,6 @@
 package org.example;
 
 public class Budget {
-    private Category category;
     private double budgetAmount;
     private double spentAmount;
 
